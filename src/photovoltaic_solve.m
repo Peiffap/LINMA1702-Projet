@@ -4,7 +4,7 @@ run('data_partie1.m')
 
 I=ones(T,1);
 E=eye(T);
-
+andres=2;
 c=[ I*cout_materiaux;
     I*cout_stockage;
     I*nb_ouvriers*cout_heure_sup;
