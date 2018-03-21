@@ -26,7 +26,7 @@ function x = photovoltaic_solve()
          I * Inf;
          I * Inf];
 
-    A = [E * duree_assemblage / 60, zeros(T), E * -nb_ouvriers * 5, 
+    A = [E * duree_assemblage / 60, zeros(T), E * -nb_ouvriers * 5,
         zeros(T,4 * T)];
     b = ones(T,1) * 35 * nb_ouvriers;
 
