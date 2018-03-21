@@ -30,17 +30,16 @@ function x = photovoltaic_solve()
         zeros(T,4 * T)];
     b = ones(T,1) * 35 * nb_ouvriers;
 
-    Aeq = [E, -E, zeros(T), E, -E, -E, -E;
-          zeros(T,4 * T), E, zeros(T,1), E(:,1:end - 1), zeros(T,2),
-          E(:,1:end-2)];
-    beq = [-stock_initial;
-          zeros(T - 1,1);
-          demande'];
+    Aeq=[E -E zeros(T) E -E -E -E;
+         zeros(T,4*T) E zeros(T,1) E(:,1:end-1) zeros(T,2) E(:,1:end-2)];
+    beq=[-stock_initial;
+        zeros(T-1,1);
+         demande'];
 
-    x = linprog(c, A, b, Aeq, beq, lb, ub);
-    x = reshape(x, [T, 7]); %Vrai x
+    x = linprog(c,A,b,Aeq,beq,lb,ub);
+    x = reshape(x,[T,7]); %Vrai x
 
-    %L = ["", "Produits", "Stockes", "Heures sup.", "Achetes", "Fournis pour i", "Fournis pour i-1", "Fournis pour i-2", "Demande"];
-    %x = [(1:T)', x, demande']
-    %x = [L; x];
+    %L = ["" "Produits" "Stockes" "Heures sup." "Achetes" "Fournis pour i" "Fournis pour i-1" "Fournis pour i-2" "Demande"];
+    %x=[(1:T)' x demande']
+    %x=[L;x];
 end
