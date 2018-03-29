@@ -1,6 +1,6 @@
 function x = Groupe_28_partie1()
     run('data_partie1.m');
-
+    z = 3;
     I = ones(T,1);
     E = eye(T);
 
