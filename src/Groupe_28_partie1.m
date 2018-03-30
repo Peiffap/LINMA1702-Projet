@@ -1,3 +1,4 @@
+function [plan_panneaux, plan_heure_sup, plan_sous_traitant, plan_stockage, autres_vars] = Groupe_28_partie1
 %Initialisation des données
 close all; clc;
 run('data_partie1.m');
@@ -20,7 +21,7 @@ if T<1
     return
 end
 
-%Verifie que les ouvriers ne travaillent pas plus de 24h/d
+%Verifie que les ouvriers ne travaillent pas plus de 24h/jour
 if heures_par_jour+nb_max_heure_sup >24
     disp('Attention il est possible que les ouvriers travaillent plus de 24h par jour avec ces donnees-ci.')
 end
@@ -33,7 +34,6 @@ else
 end
 
 %Intialisation des matrices
-disp('Version creuse')
 tic
 
 c=[ I*cout_materiaux;
@@ -44,7 +44,7 @@ c=[ I*cout_materiaux;
     I*penalite_1semaine;
     I*penalite_2semaines];
 
-A=[ E*duree_assemblage sparse(T,T) E*-nb_ouvriers sparse(T,4*T);
+A=[ E*duree_assemblage sparse(T,T) -E sparse(T,4*T);
     sparse(2*T,2*T) speye(2*T) sparse(2*T,3*T)];
 
 b=[ ones(T,1)*heures_par_semaine*nb_ouvriers;
@@ -69,44 +69,31 @@ end
 lb=sparse(7*T,1);
 
 %Cas initial
-disp('Cas initial')
-t=toc;
-fprintf('Durée de l''initialisation des matrices: %d secondes\n',t)
-tic;
 [x,objBase,exitFlag,info,dual] = linprog(c,A,b,Aeq,beq,lb,[],options);
-t=toc;
 if exitFlag~=1
     disp('Le probleme ne semble pas avoir de solution.')
     return
 end
-fprintf('Durée de l''optimisation: %d secondes.\n',t)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% size(Aeq)
-% AG=Aeq(1:T,:)
-% j=1;
-% for i=1:7*T
-% 
-%     if x(i)==0
-%         AG(:,j)=[];
-%     else
-%     j=j+1;
-%     end
-% end
-% size(AG)
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 x = reshape(x,[T,7]);
+
+plan_panneaux=x(:,1);
+plan_heure_sup=x(:,3);
+plan_sous_traitant=x(:,4);
+plan_stockage=x(:,2);
+autres_vars=x(:,5:7);
 objBase=objBase+salaire;
-disp('Tableaux des resultats');
-%disp([x demande'])
-fprintf('Le cout total est %d euros.\n',objBase);
-fprintf('La demande totale est de %d et nous fournissons %d dont %d produits et %d achetes.\n\n',sum(demande),sum(sum(x(:,5:7))),sum(sum(x(:,1))),sum(sum(x(:,4))));
+
+fprintf('Solution optimale calculee, de valeur %d (dont cout variable XXXXXX) :\n',objBase)
+
+% disp('Tableaux des resultats');
+% disp([x demande'])
+% fprintf('Le cout total est %d euros.\n',objBase);
+% fprintf('La demande totale est de %d et nous fournissons %d dont %d produits et %d achetes.\n\n',sum(demande),sum(sum(x(:,5:7))),sum(sum(x(:,1))),sum(sum(x(:,4))));
 
 solution_dual=dual.eqlin(1:T);
 diff=-delta_demande*solution_dual;
-disp('Comparaison des demandes')
 
 %Parcourt des differentes valeurs de epsilon
 for i=1:N
@@ -122,20 +109,14 @@ for i=1:N
             sparse(T-2,1);
             stock_initial];
     end
-    t=toc;
-    fprintf('Iteration: %d (epsilon=%d)\n',i,epsilon(i))
-    fprintf('Durée de l''initialisation des matrices: %d secondes\n',t)
-    tic
     
     [x,obj,exitFlag] = linprog(c,A,b,Aeq,beq,lb,[],options);
-    t=toc;
+
     if exitFlag~=1
-        fprintf('Le probleme ne semble pas solvable en i=%d (epsilon=%d)\n',i,epsilon(i))
+        fprintf('Le probleme ne semble pas avoir de solution en epsilon=%d\n',i,epsilon(i))
         break      
     else
-        fprintf('Durée de l''optimisation: %d secondes.\n',t)
         y(i)=obj+salaire;
-        fprintf('Augmentation: %d euros\n\n',y(i))
     end
 end
 
@@ -149,3 +130,4 @@ title('Variation du cout total en fonction de la variation de la demande')
 xlabel('epsilon')
 ylabel('Variation du cout [euros]')
 legend('Valeur exacte','Estimation de la procedure')
+end
