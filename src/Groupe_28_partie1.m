@@ -5,7 +5,7 @@ epsilon=0:.1:1;
 heures_par_jour=7;
 jours_par_semaine=5;
 
-%options = optimoptions('linprog','Display','off');
+options = optimoptions('linprog','Display','off');
 heures_par_semaine=heures_par_jour*jours_par_semaine;
 duree_assemblage=duree_assemblage/60;
 salaire=T*nb_ouvriers*cout_horaire*nb_heures_remunerees;
@@ -139,6 +139,13 @@ for i=1:N
     end
 end
 
-plot(epsilon,epsilon*diff,'b')
+%Affichage
+figure
+plot(epsilon,y-objBase,'r','LineWidth',2)
 hold on
-plot(epsilon,y-objBase,'r')
+p2=plot(epsilon,epsilon*diff,'--','LineWidth',2);
+p2.Color='b';
+title('Variation du cout total en fonction de la variation de la demande')
+xlabel('epsilon')
+ylabel('Variation du cout [euros]')
+legend('Valeur exacte','Estimation de la procedure')
