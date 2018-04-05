@@ -33,18 +33,18 @@ function [plan_panneaux, plan_heure_sup, plan_sous_traitant, plan_stockage, autr
 % Auteurs   : Andres Zarza Davila, Nizar Bousselmi et Gilles Peiffer
 % Groupe    : 28
 
-
-
-% Mettez votre code ici !
-
 %Initialisation des données
-close all; clc;
 run('data_partie1.m');
 epsilon=0:.1:1;
 heures_par_jour=7;  %Heures de travail par ouvrier par jour
 jours_par_semaine=5;%Jours de travail par ouvrier par semaine
 
-options = optimoptions('linprog','Display','off');
+%Coming soon :-)
+% cout_embauche=0
+% cout_licenciement=0;
+% nb_max_ouvriers=0;
+
+options = optimoptions('linprog','Display','off','Algorithm','dual-simplex');
 heures_par_semaine=heures_par_jour*jours_par_semaine;
 duree_assemblage=duree_assemblage/60;
 salaire=T*nb_ouvriers*cout_horaire*nb_heures_remunerees;
@@ -53,7 +53,7 @@ E=speye(T);
 N=length(epsilon);
 y=zeros(N,1);
     
-%Vérifie les donnees entrees
+%Verifie les donnees entrees
 if heures_par_jour>24 || heures_par_jour<0
     disp('ATTENTION: Nombre innatendu d''heures par jour :-(')
 end
@@ -81,13 +81,6 @@ end
 %Verifie que les ouvriers ne travaillent pas plus de 24h/jour
 if heures_par_jour+nb_max_heure_sup >24
     disp('ATTENTION: il est possible que les ouvriers travaillent plus de 24h par jour avec ces donnees-ci.')
-end
-
-%Indique si la solution sera entiere ou pas (pas au point)
-if (35+nb_max_heure_sup)*nb_ouvriers/duree_assemblage==round((35+nb_max_heure_sup)*nb_ouvriers/duree_assemblage)
-    disp('Entier')
-else
-    disp('Non-entier')
 end
 
 %Intialisation des matrices
@@ -133,7 +126,8 @@ lb=sparse(7*T,1);
 %Cas initial
 [x,objBase,exitFlag,~,dual] = linprog(c,A,b,Aeq,beq,lb,[],options);
 if exitFlag~=1
-    disp('Le probleme ne semble pas avoir de solution :-( \n La demande est probablement impossible a satisfaire avec les donnees fournis.')
+    disp('Le probleme ne semble pas avoir de solution :-(')
+    disp('La demande est probablement impossible a satisfaire avec les donnees fournies.')
     return
 end
 
@@ -165,7 +159,7 @@ tmp3=x(:,7)';
 fournis_2semaines=[tmp3(1,3:end) 0 0];
 
 %Affichage du tableau
-fprintf('Solution optimale calculee, de valeur %11.1f (dont cout variable XXXXXX) :\n',objBase)
+fprintf('Solution optimale calculee de valeur %11.1f \n',objBase)
 fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
 fprintf('Stock initial             :%s\n',sprintf('%11.1f',stock_initial_semaine))
 fprintf('Production standard       :%s\n',sprintf('%11.1f',x(:,1)-x(:,3)/duree_assemblage))
@@ -181,8 +175,8 @@ fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
 fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
 fprintf('\n')
 
-%Parcourt des differentes valeurs de epsilon, ici on recalcule tout le
-%probleme
+%Parcourt des differentes valeurs de epsilon, ici on recalcule completement
+%tout le probleme
 for i=1:N
     %Modification du vecteur demande
     demande=demande+epsilon(i)*delta_demande;
