@@ -33,7 +33,7 @@ function [plan_panneaux, plan_heure_sup, plan_sous_traitant, plan_stockage, autr
 % Auteurs   : Andres Zarza Davila, Nizar Bousselmi et Gilles Peiffer
 % Groupe    : 28
 
-%Initialisation des données
+%Initialisation des donnees
 run('data_partie1.m');
 epsilon=0:.1:1;
 heures_par_jour=7;  %Heures de travail par ouvrier par jour
