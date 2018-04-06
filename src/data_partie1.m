@@ -19,4 +19,4 @@ penalite_2semaines = 15;
 cout_sous_traitant = 25;
 nb_max_sous_traitant = 500;
 
-delta_demande = [0,0,0,100,200,-100,0,0,0,0,0];
+delta_demande =[0,0,0,100,200,-100,0,0,0,0,0];
