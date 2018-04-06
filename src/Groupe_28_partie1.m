@@ -197,6 +197,7 @@ for i=1:N
     [~,obj,exitFlag] = linprog(c,A,b,Aeq,beq,lb,[],options);
     if exitFlag~=1
         fprintf('Le probleme ne semble pas avoir de solution en epsilon=%d (i=%d)\n',epsilon(i),i)
+        disp('Le programme a ete arrete.')
         break      
     else
         y(i)=obj;
