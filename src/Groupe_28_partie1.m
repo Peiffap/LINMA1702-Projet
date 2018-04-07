@@ -6,11 +6,11 @@ function [plan_panneaux, plan_heure_sup, plan_sous_traitant, plan_stockage, autr
 %
 % Plus precisement, la fonction lit les donnees contenues dans le fichier
 % data_partie1.m et renvoie les actions hebdomadaires que doit faire
-% l'usine si elle veut minimiser son cout. Elle affiche egalement sous
-% forme de tableau les resultats. Par ailleurs, elle affiche sous forme de
-% graphique l'evolution du cout total si la demande est augmentee d'un
-% vecteur epsilon*delta_demande ou epsilon est un scalaire entre 0 et 1. Ce
-% sont les valeurs d'epsilon qui sont sur l'abscisse du graphique.
+% l'usine si elle veut minimiser son cout. Elle affiche dans un tableau les
+% resultats et dans un graphique l'evolution du cout total si la demande
+% est augmentee d'un vecteur epsilon*delta_demande ou epsilon est un
+% scalaire entre 0 et 1. Ce sont les valeurs d'epsilon qui sont sur
+% l'abscisse du graphique.
 % 
 % Sorties:
 %  plan_panneaux : vecteur T x 1. Contient le nombre de panneaux produits
@@ -40,12 +40,11 @@ heures_par_jour=7;   %Heures de travail par ouvrier par jour
 jours_par_semaine=5; %Jours de travail par ouvrier par semaine
 
 %Coming soon :-)
-% cout_embauche=0
+% cout_embauche=0;
 % cout_licenciement=0;
 % nb_max_ouvriers=0;
 
-%Variables a ne pas modifier
-options = optimoptions('linprog','Display','off','Algorithm','dual-simplex');
+%Variables (a ne pas modifier!)
 heures_par_semaine=heures_par_jour*jours_par_semaine;
 duree_assemblage=duree_assemblage/60;
 salaire=T*nb_ouvriers*cout_horaire*nb_heures_remunerees;
@@ -53,6 +52,13 @@ I=ones(T,1);
 E=speye(T);
 N=length(epsilon);
 y=zeros(N,1);
+
+%Choix de l'algorithme en fonction de la taille du probleme
+if T>1000
+    options = optimoptions('linprog','Display','off','Algorithm','interior-point');
+else
+    options = optimoptions('linprog','Display','off','Algorithm','dual-simplex');
+end
 
 %Verifie les donnees entrees
 if heures_par_jour>24 || heures_par_jour<0
@@ -117,7 +123,7 @@ else
           -stock_initial;
           sparse(T-2,1);
           stock_initial;
-          sparse(3,1)];
+          sparse(3,1)]; %x6,1=x7,1=x7,2=0
 end
 
 lb=sparse(7*T,1);
@@ -139,6 +145,7 @@ plan_heure_sup=x(:,3);
 plan_sous_traitant=x(:,4);
 plan_stockage=x(:,2);
 autres_vars=x(:,5:7);
+
 objBase=objBase+salaire;
 
 %Stock initial de chaque semaine
