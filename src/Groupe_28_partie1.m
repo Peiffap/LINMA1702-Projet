@@ -78,6 +78,7 @@ end
 if recalcul ~=0 && recalcul~=1
     disp('Attention: recalcul doit valoir 1 si la valeur exacte de chaque nouvelle demande doit etre calculee,')
     disp('et 0 sinon et pas un autre nombre.')
+end
 if heures_par_jour>24 || heures_par_jour<0
     disp('ATTENTION: Nombre innatendu d''heures par jour :-(')
 end
@@ -202,6 +203,10 @@ fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
 fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
 fprintf('\n')
 
+%On recupere la solution du dual pour estimer la variation
+solution_dual=dual.eqlin(1:T);
+diff=-delta_demande*solution_dual;
+
 %Parcourt des differentes valeurs de epsilon
 %Ici on recalcule completement tout le probleme si recalcul=1
 if recalcul==1
@@ -228,9 +233,6 @@ if recalcul==1
             y(i)=obj;
         end
     end
-    %On recupere la solution du dual pour estimer la variation
-    solution_dual=dual.eqlin(1:T);
-    diff=-delta_demande*solution_dual;
     
     %Affichage du graphique
     figure
@@ -245,9 +247,6 @@ if recalcul==1
     
     %Si recalcul=0
 else
-    %On recupere la solution du dual pour estimer la variation
-    solution_dual=dual.eqlin(1:T);
-    diff=-delta_demande*solution_dual;
     
     %Affichage du graphique
     figure
