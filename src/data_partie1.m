@@ -1,5 +1,5 @@
-T = 10000;
-demande = rand(1,T)*2000;%[2000,2000,2000,3000,4000,2000,1500,1500,2500,3000,3000];
+T = 1;
+demande =2000;% [2000,2000,2000,3000,4000,2000,1500,1500,2500,3000,3000];
 
 cout_materiaux = 10;
 duree_assemblage = 15;
@@ -19,4 +19,4 @@ penalite_2semaines = 15;
 cout_sous_traitant = 25;
 nb_max_sous_traitant = 500;
 
-delta_demande =rand(1,T)*20;% [0,0,0,100,200,-100,0,0,0,0,0];
+delta_demande =[0,0,0,100,200,-100,0,0,0,0,0];

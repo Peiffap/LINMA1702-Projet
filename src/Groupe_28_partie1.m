@@ -126,22 +126,22 @@ b=[ ones(T,1)*heures_par_semaine*nb_ouvriers;
 
 if T==1
     Aeq=[ sparse(1,4*T) 1 sparse(1,2);
-        1 sparse(1,T-1) -1 sparse(1,2*T-1) 1 sparse(1,T-1) -1 sparse(1,T-1) -1 zeros(1,T-1) -1 zeros(1,T-1)];
+          1  -1 sparse(1,1) 1 -1 -1 -1];
     
     beq=[ demande';
-        sparse(1,1)];
+          sparse(1,1)];
 else
     Aeq=[ sparse(T,4*T) E sparse(T,1) E(:,1:end-1) sparse(T,2) E(:,1:end-2);
-        E ([E(:,2:end) sparse(T,1)]-E) sparse(T,T) E -E -E -E
-        sparse(1,5*T) 1 sparse(1,2*T-1);  %x6,1=0
-        sparse(1,6*T) 1 sparse(1,T-1);    %x7,1=0
-        sparse(1,6*T+1) 1 sparse(1,T-2)]; %x7,2=0
+          E ([E(:,2:end) sparse(T,1)]-E) sparse(T,T) E -E -E -E;
+          sparse(1,5*T) 1 sparse(1,2*T-1);  %x6,1=0
+          sparse(1,6*T) 1 sparse(1,T-1);    %x7,1=0
+          sparse(1,6*T+1) 1 sparse(1,T-2)]; %x7,2=0
     
     beq=[ demande';
-        -stock_initial;
-        sparse(T-2,1);
-        stock_initial;
-        sparse(3,1)]; %x6,1=x7,1=x7,2=0
+          -stock_initial;
+          sparse(T-2,1);
+          stock_initial;
+          sparse(3,1)]; %x6,1=x7,1=x7,2=0
 end
 
 lb=sparse(7*T,1);
