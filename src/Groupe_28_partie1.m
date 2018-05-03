@@ -1,4 +1,4 @@
-function [plan_panneaux, plan_heure_sup, plan_sous_traitant, plan_stockage, autres_vars] = Groupe_28_partie1(recalcul)
+function x = Groupe_28_partie1(recalcul)
 % Groupe_28_partie1  organise le planning d'une usine de production de
 % panneaux solaires. Cette fonction a ete realisee dans le cadre du projet
 % du cours de Modèles et méthodes d'optimisation I donne par Francois
@@ -147,19 +147,16 @@ end
 lb=sparse(7*T,1);
 
 %Cas initial
-options = optimoptions('linprog','Display','off','Algorithm','interior-point');
 [x,objBase,exitFlag,~,dual] = linprog(c,A,b,Aeq,beq,lb,[],options);
 if exitFlag~=1
     disp('Le probleme ne semble pas avoir de solution :-(')
     disp('La demande est probablement impossible a satisfaire avec les donnees fournies.')
     return
 end
-options = optimoptions('linprog','Display','off','Algorithm','dual-simplex');
-y=linprog(c,A,b,Aeq,beq,lb,[],options);
+
 %Permet de passer d'un vecteur 7*T x 1 a une matrice T x 7
-x = reshape(x,[T,7]);
-y = reshape(y,[T,7]);
-u=[x(:,3) y(:,3)]
+x = reshape(x,[T,7])
+
 %Vecteurs a retourner
 plan_panneaux=x(:,1);
 plan_heure_sup=x(:,3);
@@ -167,7 +164,7 @@ plan_sous_traitant=x(:,4);
 plan_stockage=x(:,2);
 autres_vars=x(:,5:7);
 
-objBase=objBase+salaire;
+objBase=objBase+salaire
 
 %Stock initial de chaque semaine
 stock_initial_semaine=[stock_initial plan_stockage(1:end-1)'];
@@ -190,21 +187,21 @@ if T==1
 end
 
 %Affichage du tableau
-% fprintf('Solution optimale calculee de valeur %11.2f \n',objBase)
-% fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
-% fprintf('Stock initial             :%s\n',sprintf('%11.1f',stock_initial_semaine))
-% fprintf('Production standard       :%s\n',sprintf('%11.1f',x(:,1)-x(:,3)/duree_assemblage))
-% fprintf('Production via heures sup :%s\n',sprintf('%11.1f',x(:,3)/duree_assemblage))
-% fprintf('Production sous-traitee   :%s\n',sprintf('%11.1f',x(:,4)))
-% fprintf('-> Production totale      :%s\n',sprintf('%11.1f',x(:,1)+x(:,4)))
-% fprintf('\n')
-% fprintf('Demande a satisfaire      :%s\n',sprintf('%11.1f',demande))
-% fprintf('Demande satis a temps     :%s\n',sprintf('%11.1f',x(:,5)))
-% fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-x(:,5)))
-% fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
-% fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
-% fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
-% fprintf('\n')
+fprintf('Solution optimale calculee de valeur %11.2f \n',objBase)
+fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
+fprintf('Stock initial             :%s\n',sprintf('%11.1f',stock_initial_semaine))
+fprintf('Production standard       :%s\n',sprintf('%11.1f',x(:,1)-x(:,3)/duree_assemblage))
+fprintf('Production via heures sup :%s\n',sprintf('%11.1f',x(:,3)/duree_assemblage))
+fprintf('Production sous-traitee   :%s\n',sprintf('%11.1f',x(:,4)))
+fprintf('-> Production totale      :%s\n',sprintf('%11.1f',x(:,1)+x(:,4)))
+fprintf('\n')
+fprintf('Demande a satisfaire      :%s\n',sprintf('%11.1f',demande))
+fprintf('Demande satis a temps     :%s\n',sprintf('%11.1f',x(:,5)))
+fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-x(:,5)))
+fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
+fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
+fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
+fprintf('\n')
 
 %On recupere la solution du dual pour estimer la variation
 solution_dual=dual.eqlin(1:T);

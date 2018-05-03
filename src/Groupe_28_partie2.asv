@@ -80,7 +80,7 @@ end
 
 lb=sparse(7*T,1);
 
-[xx,f,exitFlag] = linprog(c1,A,b,Aeq,beq,lb,ub,options);
+[~,f,exitFlag] = linprog(c1,A,b,Aeq,beq,lb,ub,options);
 
 if exitFlag~=1
     disp('Le probleme ne semble pas avoir de solution :-(')
@@ -90,22 +90,17 @@ end
 
 %nouvelle contrainte
 AdoubleOpt=[Aeq;
-            c1'];
+            c1];
 bdoubleOpt=[beq;
             f];
-        
 %min sous traitant
-cMin=[sparse(1*T,1);
+cMin=[sparse(3*T,1);
       I*cout_sous_traitant;
-      sparse(5*T,1)];
-  [x,f2] = linprog(cMin,A,b,AdoubleOpt,bdoubleOpt,lb,ub,options);
-  x = reshape(x,[T,7]);
-   sum(x(:,4))
-  %Max sous traitant
+      sparse(3*T,1)];
   
-  [x,f2] = linprog(-cMin,A,b,AdoubleOpt,bdoubleOpt,lb,ub,options);
-  x = reshape(x,[T,7]);
-   sum(x(:,4))
+[x,f2] = linprog(c,A,b,Aeq,beq,lb,ub,options);
+  
+  
 
 
 

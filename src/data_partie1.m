@@ -20,3 +20,7 @@ cout_sous_traitant = 25;
 nb_max_sous_traitant = 500;
 
 delta_demande = [0,0,0,100,200,-100,0,0,0,0,0];
+
+cout_embauche=10;
+cout_licenciement=10;
+nb_max_ouvriers=20;
