@@ -96,14 +96,92 @@ cMin=[ sparse(3*T,1);
        sparse(3*T,1)];
 xMin = linprog(cMin,A,b,AdoubleOpt,bdoubleOpt,lb,ub,options);
 xMin = reshape(xMin,[T,7]);
-fprintf('Q10: Panneaux sous-traites min: %11.2f \n',sum(xMin(:,4)))
-fprintf('Q10: Cout total: %11.2f \n \n',f+salaire)
+ 
+%Affichage du tableau
+
+plan_stockage=xMin(:,2);
+%Stock initial de chaque semaine
+stock_initial_semaine=[stock_initial plan_stockage(1:end-1)'];
+
+%Production mise en stock
+mis_en_stock=plan_stockage'-stock_initial_semaine;
+mis_en_stock(end)=stock_initial-stock_initial_semaine(end);
+tmp=mis_en_stock<0;
+mis_en_stock(tmp)=0;
+
+%Fournis apres 1 semaine
+tmp1=xMin(:,6)';
+fournis_1semaine=[tmp1(1,2:end) 0];
+
+%Fournis apres 1 semaine
+tmp3=xMin(:,7)';
+fournis_2semaines=[tmp3(1,3:end) 0 0];
+if T==1
+    fournis_2semaines=0;
+end
+fprintf('Q10: Minimisation des panneaux sous-traites\n')
+fprintf('Cout des panneaux sous-traites (minimise): %11.2f \n',sum(xMin(:,4)))
+
+fprintf('Solution optimale calculee de valeur %11.2f \n',f+salaire)
+fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
+fprintf('Stock initial             :%s\n',sprintf('%11.1f',stock_initial_semaine))
+fprintf('Production standard       :%s\n',sprintf('%11.1f',xMin(:,1)-xMin(:,3)/duree_assemblage))
+fprintf('Production via heures sup :%s\n',sprintf('%11.1f',xMin(:,3)/duree_assemblage))
+fprintf('Production sous-traitee   :%s\n',sprintf('%11.1f',xMin(:,4)))
+fprintf('-> Production totale      :%s\n',sprintf('%11.1f',xMin(:,1)+xMin(:,4)))
+fprintf('\n')
+fprintf('Demande a satisfaire      :%s\n',sprintf('%11.1f',demande))
+fprintf('Demande satis a temps     :%s\n',sprintf('%11.1f',xMin(:,5)))
+fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-xMin(:,5)))
+fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
+fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
+fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
+fprintf('\n')
   
 %Maximisation des panneaux sous-traites
 xMax = linprog(-cMin,A,b,AdoubleOpt,bdoubleOpt,lb,ub,options);
 xMax = reshape(xMax,[T,7]);
-fprintf('Q10: Panneaux sous-traites min: %11.2f \n',sum(xMax(:,4)))
-fprintf('Q10: Cout total: %11.2f \n \n',f+salaire)
+
+%Affichage du tableau
+
+plan_stockage=xMax(:,2);
+%Stock initial de chaque semaine
+stock_initial_semaine=[stock_initial plan_stockage(1:end-1)'];
+
+%Production mise en stock
+mis_en_stock=plan_stockage'-stock_initial_semaine;
+mis_en_stock(end)=stock_initial-stock_initial_semaine(end);
+tmp=mis_en_stock<0;
+mis_en_stock(tmp)=0;
+
+%Fournis apres 1 semaine
+tmp1=xMax(:,6)';
+fournis_1semaine=[tmp1(1,2:end) 0];
+
+%Fournis apres 1 semaine
+tmp3=xMax(:,7)';
+fournis_2semaines=[tmp3(1,3:end) 0 0];
+if T==1
+    fournis_2semaines=0;
+end
+fprintf('Q10: Maximisation des panneaux sous-traites\n')
+fprintf('Cout des panneaux sous-traites (maximise): %11.2f \n',sum(xMax(:,4)))
+
+fprintf('Solution optimale calculee de valeur %11.2f \n',f+salaire)
+fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
+fprintf('Stock initial             :%s\n',sprintf('%11.1f',stock_initial_semaine))
+fprintf('Production standard       :%s\n',sprintf('%11.1f',xMax(:,1)-xMax(:,3)/duree_assemblage))
+fprintf('Production via heures sup :%s\n',sprintf('%11.1f',xMax(:,3)/duree_assemblage))
+fprintf('Production sous-traitee   :%s\n',sprintf('%11.1f',xMax(:,4)))
+fprintf('-> Production totale      :%s\n',sprintf('%11.1f',xMax(:,1)+xMax(:,4)))
+fprintf('\n')
+fprintf('Demande a satisfaire      :%s\n',sprintf('%11.1f',demande))
+fprintf('Demande satis a temps     :%s\n',sprintf('%11.1f',xMax(:,5)))
+fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-xMax(:,5)))
+fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
+fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
+fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
+fprintf('\n')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Q12
@@ -168,7 +246,51 @@ if exitFlag~=1
     disp('La demande est probablement impossible a satisfaire avec les donnees fournies.')
     return
 end
-fprintf('Q12: Solution optimale calculee de valeur %11.2f \n',f2)
+x2=reshape(x2,[T,10]);
+
+%Affichage du tableau
+
+plan_stockage=x2(:,2);
+%Stock initial de chaque semaine
+stock_initial_semaine=[stock_initial plan_stockage(1:end-1)'];
+
+%Production mise en stock
+mis_en_stock=plan_stockage'-stock_initial_semaine;
+mis_en_stock(end)=stock_initial-stock_initial_semaine(end);
+tmp=mis_en_stock<0;
+mis_en_stock(tmp)=0;
+
+%Fournis apres 1 semaine
+tmp1=x2(:,6)';
+fournis_1semaine=[tmp1(1,2:end) 0];
+
+%Fournis apres 1 semaine
+tmp3=x2(:,7)';
+fournis_2semaines=[tmp3(1,3:end) 0 0];
+if T==1
+    fournis_2semaines=0;
+end
+
+fprintf('Q12: Résolution du probleme relaxe\n')
+fprintf('Cout des panneaux sous-traites (maximise): %11.2f \n',sum(x2(:,4)))
+
+fprintf('Solution optimale calculee de valeur %11.2f \n',f2)
+fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
+fprintf('Stock initial             :%s\n',sprintf('%11.1f',stock_initial_semaine))
+fprintf('Production standard       :%s\n',sprintf('%11.1f',x2(:,1)-x2(:,3)/duree_assemblage))
+fprintf('Production via heures sup :%s\n',sprintf('%11.1f',x2(:,3)/duree_assemblage))
+fprintf('Production sous-traitee   :%s\n',sprintf('%11.1f',x2(:,4)))
+fprintf('-> Production totale      :%s\n',sprintf('%11.1f',x2(:,1)+x2(:,4)))
+fprintf('\n')
+fprintf('Demande a satisfaire      :%s\n',sprintf('%11.1f',demande))
+fprintf('Demande satis a temps     :%s\n',sprintf('%11.1f',x2(:,5)))
+fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-x2(:,5)))
+fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
+fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
+fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
+fprintf('Embauches/licencies       :%s\n',sprintf('%11.1f',x2(:,9)-x2(:,10)))
+fprintf('Ouvriers                  :%s\n',sprintf('%11.1f',x2(:,8)))
+fprintf('\n')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Q13
@@ -184,7 +306,50 @@ if exitFlagInt~=1
      return
  end
 xInt(intcon) = round(xInt(intcon));
-fprintf('Q13: Cout total: %11.2f \n',fInt)
+xInt=reshape(xInt,[T,10]);
+%Affichage du tableau
+
+plan_stockage=xInt(:,2);
+%Stock initial de chaque semaine
+stock_initial_semaine=[stock_initial plan_stockage(1:end-1)'];
+
+%Production mise en stock
+mis_en_stock=plan_stockage'-stock_initial_semaine;
+mis_en_stock(end)=stock_initial-stock_initial_semaine(end);
+tmp=mis_en_stock<0;
+mis_en_stock(tmp)=0;
+
+%Fournis apres 1 semaine
+tmp1=xInt(:,6)';
+fournis_1semaine=[tmp1(1,2:end) 0];
+
+%Fournis apres 1 semaine
+tmp3=xInt(:,7)';
+fournis_2semaines=[tmp3(1,3:end) 0 0];
+if T==1
+    fournis_2semaines=0;
+end
+
+fprintf('Q13: Résolution du probleme non-relaxe\n')
+fprintf('Cout des panneaux sous-traites (maximise): %11.2f \n',sum(xInt(:,4)))
+
+fprintf('Solution optimale calculee de valeur %11.2f \n',fInt)
+fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
+fprintf('Stock initial             :%s\n',sprintf('%11.1f',stock_initial_semaine))
+fprintf('Production standard       :%s\n',sprintf('%11.1f',xInt(:,1)-xInt(:,3)/duree_assemblage))
+fprintf('Production via heures sup :%s\n',sprintf('%11.1f',xInt(:,3)/duree_assemblage))
+fprintf('Production sous-traitee   :%s\n',sprintf('%11.1f',xInt(:,4)))
+fprintf('-> Production totale      :%s\n',sprintf('%11.1f',xInt(:,1)+x2(:,4)))
+fprintf('\n')
+fprintf('Demande a satisfaire      :%s\n',sprintf('%11.1f',demande))
+fprintf('Demande satis a temps     :%s\n',sprintf('%11.1f',xInt(:,5)))
+fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-xInt(:,5)))
+fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
+fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
+fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
+fprintf('Embauches/licencies       :%s\n',sprintf('%11.1f',xInt(:,9)-xInt(:,10)))
+fprintf('Ouvriers                  :%s\n',sprintf('%11.1f',xInt(:,8)))
+fprintf('\n')
 
 %Inutile pour l'instant
 % 
@@ -197,115 +362,5 @@ fprintf('Q13: Cout total: %11.2f \n',fInt)
 % plan_sous_traitant=x(:,4);
 % plan_stockage=x(:,2);
 % autres_vars=x(:,5:7);
-% 
-% %Stock initial de chaque semaine
-% stock_initial_semaine=[stock_initial plan_stockage(1:end-1)'];
-% 
-% %Production mise en stock
-% mis_en_stock=plan_stockage'-stock_initial_semaine;
-% mis_en_stock(end)=stock_initial-stock_initial_semaine(end);
-% tmp=mis_en_stock<0;
-% mis_en_stock(tmp)=0;
-% 
-% %Fournis apres 1 semaine
-% tmp1=x(:,6)';
-% fournis_1semaine=[tmp1(1,2:end) 0];
-% 
-% %Fournis apres 1 semaine
-% tmp3=x(:,7)';
-% fournis_2semaines=[tmp3(1,3:end) 0 0];
-% if T==1
-%     fournis_2semaines=0;
-% end
-
-%Affichage du tableau
-% fprintf('Solution optimale calculee de valeur %11.2f \n',objBase)
-% fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
-% fprintf('Stock initial             :%s\n',sprintf('%11.1f',stock_initial_semaine))
-% fprintf('Production standard       :%s\n',sprintf('%11.1f',x(:,1)-x(:,3)/duree_assemblage))
-% fprintf('Production via heures sup :%s\n',sprintf('%11.1f',x(:,3)/duree_assemblage))
-% fprintf('Production sous-traitee   :%s\n',sprintf('%11.1f',x(:,4)))
-% fprintf('-> Production totale      :%s\n',sprintf('%11.1f',x(:,1)+x(:,4)))
-% fprintf('\n')
-% fprintf('Demande a satisfaire      :%s\n',sprintf('%11.1f',demande))
-% fprintf('Demande satis a temps     :%s\n',sprintf('%11.1f',x(:,5)))
-% fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-x(:,5)))
-% fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
-% fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
-% fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
-% fprintf('\n')
-
-end
-
-function [c, A, b, Aeq, beq, ub, lb]=MatrixConstruction2
-run('data_partie1.m');
-heures_par_jour=7;   %Heures de travail par ouvrier par jour
-jours_par_semaine=5; %Jours de travail par ouvrier par semaine
-
-%Variables (a ne pas modifier!)
-heures_par_semaine=heures_par_jour*jours_par_semaine;
-duree_assemblage=duree_assemblage/60;
-I=ones(T,1);
-E=speye(T);
-c=[ I*cout_materiaux;
-    I*cout_stockage;
-    I*cout_heure_sup;
-    I*cout_sous_traitant;
-    sparse(T,1);
-    I*penalite_1semaine;
-    I*penalite_2semaines;
-    I*cout_horaire*nb_heures_remunerees;
-    I*cout_embauche;
-    I*cout_licenciement;];
-
-A=[ E*duree_assemblage sparse(T,T) -E sparse(T,4*T) -heures_par_semaine*E sparse(T,2*T);
-    sparse(T,2*T) E sparse(T,4*T) -E*nb_max_heure_sup sparse(T,2*T) ];
-
-b=sparse(2*T,1);
-
-if T==1
-    Aeq=[ sparse(1,4) 1 sparse(1,5);
-          1 -1 sparse(1,1) 1 -1 -1 -1 sparse(1,3);
-          sparse(1,7) 1 -1 1];
-    
-    beq=[ demande';
-          sparse(1,1);
-          nb_ouvriers];
-      
-    ub=[ inf;
-         inf;
-         inf;
-         nb_max_sous_traitant;
-         inf;
-         0;  %x6,1=0
-         0;  %x7,1=0
-         nb_max_ouvriers;
-         inf;
-         inf];
-else
-        
-    Aeq=[ sparse(T,4*T) E sparse(T,1) E(:,1:end-1) sparse(T,2) E(:,1:end-2) sparse(T,3*T);
-          E ([E(:,2:end) sparse(T,1)]-E) sparse(T,T) E -E -E -E sparse(T,3*T);
-          sparse(T,7*T) (E-[E(:,2:end) sparse(T,1)]) -E E];
-    
-    beq=[ demande';
-          -stock_initial;
-          sparse(T-2,1);
-          stock_initial;
-          nb_ouvriers;
-          sparse(T-1,1)];
-      
-    ub=[ ones(3*T,1)*inf;
-         I*nb_max_sous_traitant;
-         I*inf;
-         sparse(1,1);  %x6,1=0
-         ones(T-1,1)*inf;
-         sparse(2,1);  %x7,1=x7,2=0
-         ones(T-2,1)*inf;
-         I*nb_max_ouvriers;
-         ones(2*T,1)*inf];
-end
-
-lb=sparse(10*T,1);
 
 end
