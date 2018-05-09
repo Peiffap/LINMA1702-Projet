@@ -272,7 +272,6 @@ if T==1
 end
 
 fprintf('Q12: Résolution du probleme relaxe\n')
-fprintf('Cout des panneaux sous-traites (maximise): %11.2f \n',sum(x2(:,4)))
 
 fprintf('Solution optimale calculee de valeur %11.2f \n',f2)
 fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
@@ -331,7 +330,6 @@ if T==1
 end
 
 fprintf('Q13: Résolution du probleme non-relaxe\n')
-fprintf('Cout des panneaux sous-traites (maximise): %11.2f \n',sum(xInt(:,4)))
 
 fprintf('Solution optimale calculee de valeur %11.2f \n',fInt)
 fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
