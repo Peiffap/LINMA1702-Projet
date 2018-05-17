@@ -1,9 +1,54 @@
-%Groupe_28_partie2
-%Auteurs Nizar Andres Gilles
-%Il faut ajouter les verifications de donnees
 function Groupe_28_partie2
+%Groupe_28_partie2  organise le planning d'une usine de production de
+% panneaux solaires. Cette fonction a ete realisee dans le cadre de la
+% deuxieme partie du projet du cours de Modèles et méthodes d'optimisation
+% I donne par Francois Glineur.
+%
+% Plus precisement, la fonction lit les donnees contenues dans les fichiers
+% data_partie1.m et data_partie2.m. Ensuite, elle affiche les resultats
+% demandes par les differentes questions de l'enonce et renvoie les
+% resultats demandes par la Q13: gestion du personnel non relaxe.
+%
+% Q10: On minimise la meme fonction qu'en partie 1 et parmi les solutions
+%      optimales, on trouve celles qui minimise et maximise les panneaux
+%      sous-traites
+%
+% Q12: On introduit la gestion du personnel et on resoud le probleme relaxe
+%
+% Q13: On resoud le probleme non relaxe
+%
+% Entree:
+%
+% Sorties: (de la Q13: gestion du personnel non relaxe)
+%  plan_panneaux : vecteur T x 1. Contient le nombre de panneaux produits
+%                  par l'usine chaque semaine.
+%  plan_heure_sup : vecteur T x 1. Contient le nombre d'heures
+%                   supplementaires totales faites chaque semaine.
+%  plan_sous_traitant : vecteur T x 1. Contient le nombre de panneaux
+%                       sous-traites chaque semaine.
+%  plan_stockage : vecteur T x 1. Contient le nombre de panneaux mis en
+%                  stock a la fin de chaque semaine. Ce vecteur correspond
+%                  donc au nombre de panneaux stockes a la fin de la
+%                  semaine, pas la production mis en stock et ajoutee au
+%                  stock deja present.
+%
+%  plan_ouvriers : vecteur T x 1. Contient le nombre, entier, d'ouvriers
+%                  que possede l'usine chaque semaine.
+%
+%  autre_vars : vecteur T x 5. Contient 5 vecteurs colonnes T x 1. Le
+%               premier contient le nombre de panneaux fournis pour la
+%               semaine i. Le deuxieme contient le nombre de panneaux
+%               fournis pour la semaine i-1. Le troisieme contient le
+%               nombre de panneaux fournis pour la semaine i-2. Le
+%               quatrieme 
+%
+% Auteurs   : Andres Zarza Davila, Nizar Bousselmi et Gilles Peiffer
+% Groupe    : 28
+
+%Il faut ajouter les verifications de donnees
 %Initialisation des donnees (peut eventuellement etre modifiees)
 run('data_partie1.m');
+run('data_partie2.m');
 heures_par_jour=7;   %Heures de travail par ouvrier par jour
 jours_par_semaine=5; %Jours de travail par ouvrier par semaine
 
@@ -14,9 +59,9 @@ salaire=T*nb_ouvriers*cout_horaire*nb_heures_remunerees;
 I=ones(T,1);
 E=speye(T);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Q10:Probleme partie 1
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Q10: Probleme partie 1 avec seconde minimisation/maximisation %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Choix de l'algorithme en fonction de la taille du probleme
 %n+m = 12*T+3 > 10 000 => interior-point
@@ -119,8 +164,8 @@ fournis_2semaines=[tmp3(1,3:end) 0 0];
 if T==1
     fournis_2semaines=0;
 end
-fprintf('Q10: Minimisation des panneaux sous-traites\n')
-fprintf('Cout des panneaux sous-traites (minimise): %11.2f \n',sum(xMin(:,4)))
+fprintf('Q10: Minimisation des panneaux sous-traites\n\n')
+fprintf('Nombre de panneaux sous-traites (minimise): %11.2f \n',sum(xMin(:,4)))
 
 fprintf('Solution optimale calculee de valeur %11.2f \n',f+salaire)
 fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
@@ -136,7 +181,7 @@ fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-xMin(:,5)))
 fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
 fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
 fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
-fprintf('\n')
+fprintf('\n\n')
   
 %Maximisation des panneaux sous-traites
 xMax = linprog(-cMin,A,b,AdoubleOpt,bdoubleOpt,lb,ub,options);
@@ -164,8 +209,8 @@ fournis_2semaines=[tmp3(1,3:end) 0 0];
 if T==1
     fournis_2semaines=0;
 end
-fprintf('Q10: Maximisation des panneaux sous-traites\n')
-fprintf('Cout des panneaux sous-traites (maximise): %11.2f \n',sum(xMax(:,4)))
+fprintf('Q10: Maximisation des panneaux sous-traites\n\n')
+fprintf('Nombre de panneaux sous-traites (maximise): %11.2f \n',sum(xMax(:,4)))
 
 fprintf('Solution optimale calculee de valeur %11.2f \n',f+salaire)
 fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
@@ -181,11 +226,11 @@ fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-xMax(:,5)))
 fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
 fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
 fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
-fprintf('\n')
+fprintf('\n\n')
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Q12
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Q12: Gestion du personnel relaxe %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 c2=[ c1;
      I*cout_horaire*nb_heures_remunerees;
@@ -271,7 +316,7 @@ if T==1
     fournis_2semaines=0;
 end
 
-fprintf('Q12: Résolution du probleme relaxe\n')
+fprintf('Q12: Résolution du probleme relaxe\n\n')
 
 fprintf('Solution optimale calculee de valeur %11.2f \n',f2)
 fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
@@ -286,17 +331,17 @@ fprintf('Demande satis a temps     :%s\n',sprintf('%11.1f',x2(:,5)))
 fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-x2(:,5)))
 fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
 fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
-fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
+fprintf('Production mise en stock  :%s\n\n',sprintf('%11.1f',mis_en_stock))
 fprintf('Embauches/licencies       :%s\n',sprintf('%11.1f',x2(:,9)-x2(:,10)))
 fprintf('Ouvriers                  :%s\n',sprintf('%11.1f',x2(:,8)))
-fprintf('\n')
+fprintf('\n\n')
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Q13
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Q13: Gestion du personnel %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 optionsInt = optimoptions('intlinprog','Display','off');
-intcon=(7*T+1):(10*T);
+intcon=(7*T+1):(8*T);
 
 [xInt,fInt,exitFlagInt] = intlinprog(c2,intcon,A2,b2,Aeq2,beq2,lb2,ub2,optionsInt);
 if exitFlagInt~=1
@@ -306,9 +351,18 @@ if exitFlagInt~=1
  end
 xInt(intcon) = round(xInt(intcon));
 xInt=reshape(xInt,[T,10]);
+
+%Vecteurs a retourner
+plan_panneaux=xInt(:,1);
+plan_stockage=xInt(:,2);
+plan_heure_sup=xInt(:,3);
+plan_sous_traitant=xInt(:,4);
+plan_stockage=xInt(:,2);
+plan_ouvriers=xInt(:,8);
+autres_vars=[xInt(:,5:7) xInt(:,9:10)];
+
 %Affichage du tableau
 
-plan_stockage=xInt(:,2);
 %Stock initial de chaque semaine
 stock_initial_semaine=[stock_initial plan_stockage(1:end-1)'];
 
@@ -329,7 +383,7 @@ if T==1
     fournis_2semaines=0;
 end
 
-fprintf('Q13: Résolution du probleme non-relaxe\n')
+fprintf('Q13: Résolution du probleme non-relaxe\n\n')
 
 fprintf('Solution optimale calculee de valeur %11.2f \n',fInt)
 fprintf('Semaines                  :%s\n',sprintf('%11d',1:T))
@@ -344,21 +398,9 @@ fprintf('Demande satis a temps     :%s\n',sprintf('%11.1f',xInt(:,5)))
 fprintf('Demande non satisfaite    :%s\n',sprintf('%11.1f',demande'-xInt(:,5)))
 fprintf('Demande satis apres 1 sem :%s\n',sprintf('%11.1f',fournis_1semaine))
 fprintf('Demande satis apres 2 sem :%s\n',sprintf('%11.1f',fournis_2semaines))
-fprintf('Production mise en stock  :%s\n',sprintf('%11.1f',mis_en_stock))
+fprintf('Production mise en stock  :%s\n\n',sprintf('%11.1f',mis_en_stock))
 fprintf('Embauches/licencies       :%s\n',sprintf('%11.1f',xInt(:,9)-xInt(:,10)))
 fprintf('Ouvriers                  :%s\n',sprintf('%11.1f',xInt(:,8)))
-fprintf('\n')
-
-%Inutile pour l'instant
-% 
-% %Permet de passer d'un vecteur 7*T x 1 a une matrice T x 7
-% x = reshape(x,[T,10]);
-% 
-% %Vecteurs a retourner
-% plan_panneaux=x(:,1);
-% plan_heure_sup=x(:,3);
-% plan_sous_traitant=x(:,4);
-% plan_stockage=x(:,2);
-% autres_vars=x(:,5:7);
+fprintf('\n\n')
 
 end

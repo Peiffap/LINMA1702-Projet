@@ -18,7 +18,7 @@ function x = Groupe_28_partie1(recalcul)
 % Attention: si T est tres grand, le programme peut prendre un certain
 % temps si on recalcule entierement le probleme pour chaque nouvelle
 % demande.
-
+%
 % Entree:
 %  recalcul : booleen. Si il est vrai (=1), en plus de l'estimation, le
 %             probleme est entierement recalcule, et le nouveau cout total
