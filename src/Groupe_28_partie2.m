@@ -1,5 +1,5 @@
 function Groupe_28_partie2
-%Groupe_28_partie2  organise le planning d'une usine de production de
+% Groupe_28_partie2  organise le planning d'une usine de production de
 % panneaux solaires. Cette fonction a ete realisee dans le cadre de la
 % deuxieme partie du projet du cours de Modèles et méthodes d'optimisation
 % I donne par Francois Glineur.
@@ -17,7 +17,7 @@ function Groupe_28_partie2
 %
 % Q13: On resoud le probleme non relaxe
 %
-% Entree:
+% Entree: Le programme ne prend pas d'argument.
 %
 % Sorties: (de la Q13: gestion du personnel non relaxe)
 %  plan_panneaux : vecteur T x 1. Contient le nombre de panneaux produits
@@ -45,7 +45,6 @@ function Groupe_28_partie2
 % Auteurs   : Andres Zarza Davila, Nizar Bousselmi et Gilles Peiffer
 % Groupe    : 28
 
-%Il faut ajouter les verifications de donnees
 %Initialisation des donnees (peut eventuellement etre modifiees)
 run('data_partie1.m');
 run('data_partie2.m');
